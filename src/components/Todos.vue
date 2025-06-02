@@ -35,7 +35,7 @@ function createTodo() {
 
 <template>
   <main>
-    <h1>My todos</h1>
+    <h1>My todos (Develop)</h1>
     <button @click="createTodo">+ new</button>
     <ul>
       <li 
