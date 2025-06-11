@@ -1,5 +1,6 @@
 type Todo @model {
   id: ID!
+  content: String    # Keep this for backwards compatibility
   destination: String!
   date: AWSDateTime!
   passengers: Int!
