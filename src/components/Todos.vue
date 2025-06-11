@@ -6,8 +6,8 @@ import { generateClient } from 'aws-amplify/data';
 
 const client = generateClient<Schema>();
 
-// create a reactive reference to the array of bookings
-const bookings = ref<Array<Schema['Booking']["type"]>>([]);
+// create a reactive reference to the array of todos (which will be our bookings)
+const todos = ref<Array<Schema['Todo']['type']>>([]);
 
 // Add form data reactive references
 const formData = ref({
@@ -17,26 +17,26 @@ const formData = ref({
   contactEmail: ''
 });
 
-function listBookings() {
-  client.models.Booking.observeQuery().subscribe({
-    next: ({ items, isSynced }) => {
-      bookings.value = items
-     },
+function listTodos() {
+  client.models.Todo.observeQuery().subscribe({
+    next: ({ items, isSynced }: { items: Schema['Todo']['type'][], isSynced: boolean }) => {
+      todos.value = items;
+    },
   }); 
 }
 
-function createBooking() {
+function createTodo() {
   if (!formData.value.destination || !formData.value.date || !formData.value.contactEmail) {
     alert('Please fill in all required fields');
     return;
   }
 
-  client.models.Booking.create({
+  client.models.Todo.create({
     destination: formData.value.destination,
     date: formData.value.date,
     passengers: formData.value.passengers,
     contactEmail: formData.value.contactEmail,
-    status: 'PENDING' // You might want to add a status field to track booking state
+    status: 'PENDING'
   }).then(() => {
     // Reset form after successful booking
     formData.value = {
@@ -46,18 +46,17 @@ function createBooking() {
       contactEmail: ''
     };
     // Update the list of bookings
-    listBookings();
+    listTodos();
     alert('Booking submitted successfully!');
-  }).catch(error => {
+  }).catch((error: Error) => {
     alert('Error creating booking: ' + error.message);
   });
 }
     
-// fetch bookings when the component is mounted
+// fetch todos when the component is mounted
 onMounted(() => {
-  listBookings();
+  listTodos();
 });
-
 </script>
 
 <template>
@@ -67,7 +66,7 @@ onMounted(() => {
     <!-- Booking Form -->
     <div class="booking-form">
       <h2>Create New Booking</h2>
-      <form @submit.prevent="createBooking">
+      <form @submit.prevent="createTodo">
         <div class="form-group">
           <label>Destination:</label>
           <input 
@@ -114,7 +113,7 @@ onMounted(() => {
     <!-- Bookings List -->
     <div class="bookings-list">
       <h2>Current Bookings</h2>
-      <table v-if="bookings.length">
+      <table v-if="todos.length">
         <thead>
           <tr>
             <th>Destination</th>
@@ -125,12 +124,12 @@ onMounted(() => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="booking in bookings" :key="booking.id">
-            <td>{{ booking.destination }}</td>
-            <td>{{ new Date(booking.date).toLocaleDateString() }}</td>
-            <td>{{ booking.passengers }}</td>
-            <td>{{ booking.contactEmail }}</td>
-            <td>{{ booking.status }}</td>
+          <tr v-for="todo in todos" :key="todo.id">
+            <td>{{ todo.destination }}</td>
+            <td>{{ new Date(todo.date).toLocaleDateString() }}</td>
+            <td>{{ todo.passengers }}</td>
+            <td>{{ todo.contactEmail }}</td>
+            <td>{{ todo.status }}</td>
           </tr>
         </tbody>
       </table>

@@ -1,4 +1,4 @@
-type Booking @model {
+type Todo @model {
   id: ID!
   destination: String!
   date: AWSDateTime!
