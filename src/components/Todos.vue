@@ -14,7 +14,7 @@ const newTrip = reactive({
   endDate: '',
   budget: 0,
   notes: '',
-  status: 'PLANNED'
+  status: 'PLANNED' as const
 });
 const showForm = ref(false);
 
@@ -41,7 +41,7 @@ function createTrip() {
     newTrip.endDate = '';
     newTrip.budget = 0;
     newTrip.notes = '';
-    newTrip.status = 'PLANNED';
+    newTrip.status = 'PLANNED' as const;
     showForm.value = false;
     
     // After creating a new trip, update the list
@@ -49,12 +49,12 @@ function createTrip() {
   });
 }
 
-function formatDate(dateString: string): string {
+function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return '';
   return new Date(dateString).toLocaleDateString();
 }
 
-function getStatusClass(status: string): string {
+function getStatusClass(status: string | null | undefined): string {
   switch(status) {
     case 'PLANNED': return 'status-planned';
     case 'BOOKED': return 'status-booked';
@@ -133,7 +133,7 @@ onMounted(() => {
           <span :class="['status-badge', getStatusClass(trip.status)]">{{ trip.status }}</span>
         </div>
         <div class="trip-dates">
-          <span>{{ formatDate(trip.startDate) }} - {{ formatDate(trip.endDate) }}</span>
+          <span>{{ formatDate(trip.startDate || '') }} - {{ formatDate(trip.endDate || '') }}</span>
         </div>
         <div class="trip-budget">Budget: ${{ trip.budget }}</div>
         <div class="trip-notes" v-if="trip.notes">{{ trip.notes }}</div>
