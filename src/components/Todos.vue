@@ -6,12 +6,10 @@ import { generateClient } from 'aws-amplify/data';
 
 const client = generateClient<Schema>();
 
-// create a reactive reference to the array of todos
 const todos = ref<Array<Schema['Todo']['type']>>([]);
 
-// Add form data reactive references
 const formData = ref({
-  content: '',  // Keep this for type compatibility
+  content: '',
   destination: '',
   date: '',
   passengers: 1,
@@ -33,15 +31,16 @@ function createTodo() {
     return;
   }
 
-  client.models.Todo.create({
-    content: formData.value.destination, // Use content field for backwards compatibility
+  const newTodo = {
+    content: formData.value.destination,
     destination: formData.value.destination,
     date: formData.value.date,
     passengers: formData.value.passengers,
     contactEmail: formData.value.contactEmail,
     status: formData.value.status
-  }).then(() => {
-    // Reset form after successful booking
+  };
+
+  client.models.Todo.create(newTodo).then(() => {
     formData.value = {
       content: '',
       destination: '',
@@ -50,15 +49,13 @@ function createTodo() {
       contactEmail: '',
       status: 'PENDING'
     };
-    // Update the list of bookings
     listTodos();
     alert('Booking submitted successfully!');
   }).catch((error: Error) => {
     alert('Error creating booking: ' + error.message);
   });
 }
-    
-// fetch todos when the component is mounted
+
 onMounted(() => {
   listTodos();
 });
@@ -130,8 +127,8 @@ onMounted(() => {
         </thead>
         <tbody>
           <tr v-for="todo in todos" :key="todo.id">
-            <td>{{ todo.destination || todo.content }}</td>
-            <td>{{ todo.date ? new Date(todo.date).toLocaleDateString() : '' }}</td>
+            <td>{{ todo.destination }}</td>
+            <td>{{ new Date(todo.date).toLocaleDateString() }}</td>
             <td>{{ todo.passengers }}</td>
             <td>{{ todo.contactEmail }}</td>
             <td>{{ todo.status }}</td>
@@ -144,5 +141,60 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* ... (keep the existing styles) ... */
+.booking-form {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.bookings-list {
+  margin-top: 30px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
 </style>
