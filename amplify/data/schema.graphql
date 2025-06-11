@@ -1,0 +1,8 @@
+type Booking @model {
+  id: ID!
+  destination: String!
+  date: AWSDateTime!
+  passengers: Int!
+  contactEmail: String!
+  status: String!
+}
