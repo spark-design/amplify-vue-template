@@ -13,7 +13,7 @@ const schema = a.schema({
       endDate: a.string(),
       budget: a.float(),
       notes: a.string(),
-      status: a.enum(['PLANNED', 'BOOKED', 'COMPLETED', 'CANCELLED']).required().default('PLANNED'),
+      status: a.enum(['PLANNED', 'BOOKED', 'COMPLETED', 'CANCELLED']),
     })
     .authorization((allow) => [allow.publicApiKey()]),
 });
