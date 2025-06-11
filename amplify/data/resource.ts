@@ -1,15 +1,19 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
 /*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any user authenticated via an API key can "create", "read",
-"update", and "delete" any "Todo" records.
+The section below creates a Trip database table with fields for tracking
+vacation plans. The authorization rule specifies that any user authenticated
+via an API key can "create", "read", "update", and "delete" any "Trip" records.
 =========================================================================*/
 const schema = a.schema({
-  Todo: a
+  Trip: a
     .model({
-      content: a.string(),
+      destination: a.string(),
+      startDate: a.string(),
+      endDate: a.string(),
+      budget: a.float(),
+      notes: a.string(),
+      status: a.enum(['PLANNED', 'BOOKED', 'COMPLETED', 'CANCELLED']).required().default('PLANNED'),
     })
     .authorization((allow) => [allow.publicApiKey()]),
 });
@@ -52,6 +56,6 @@ Fetch records from the database and use them in your frontend component.
 
 /* For example, in a React component, you can use this snippet in your
   function's RETURN statement */
-// const { data: todos } = await client.models.Todo.list()
+// const { data: trips } = await client.models.Trip.list()
 
-// return <ul>{todos.map(todo => <li key={todo.id}>{todo.content}</li>)}</ul>
+// return <ul>{trips.map(trip => <li key={trip.id}>{trip.destination}</li>)}</ul>
