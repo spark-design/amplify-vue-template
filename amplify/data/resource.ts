@@ -14,7 +14,7 @@ const schema = a.schema({
       budget: a.float(),
       notes: a.string(),
       status: a.enum(['PLANNED', 'BOOKED', 'COMPLETED', 'CANCELLED']),
-      photoKeys: a.array(a.string()), // Array of S3 keys for trip photos
+      photoKeys: a.string(), // Comma-separated list of S3 keys for trip photos
     })
     .authorization((allow) => [allow.publicApiKey()]),
 });

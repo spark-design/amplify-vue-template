@@ -18,10 +18,10 @@
       <div v-if="uploadStatus" class="status-message">{{ uploadStatus }}</div>
     </div>
     
-    <div v-if="selectedTrip && selectedTrip.photoKeys && selectedTrip.photoKeys.length > 0" class="photos-list">
+    <div v-if="selectedTrip && selectedTrip.photoKeys" class="photos-list">
       <h3>Trip Photos</h3>
       <ul>
-        <li v-for="photoKey in selectedTrip.photoKeys" :key="photoKey">
+        <li v-for="photoKey in photoKeysList" :key="photoKey">
           {{ photoKey.split('/').pop() }}
         </li>
       </ul>
@@ -43,6 +43,13 @@ const uploadStatus = ref('');
 
 const selectedTrip = computed(() => {
   return trips.value.find(trip => trip.id === selectedTripId.value);
+});
+
+const photoKeysList = computed(() => {
+  if (!selectedTrip.value || !selectedTrip.value.photoKeys) {
+    return [];
+  }
+  return selectedTrip.value.photoKeys.split(',').filter(key => key.trim() !== '');
 });
 
 onMounted(async () => {
@@ -85,11 +92,12 @@ const handleUpload = async () => {
     
     // Update the Trip record in DynamoDB
     const currentTrip = selectedTrip.value;
-    const photoKeys = currentTrip.photoKeys || [];
+    const currentKeys = currentTrip.photoKeys || '';
+    const newPhotoKeys = currentKeys ? `${currentKeys},${fileKey}` : fileKey;
     
     await client.models.Trip.update({
       id: selectedTripId.value,
-      photoKeys: [...photoKeys, fileKey]
+      photoKeys: newPhotoKeys
     });
     
     // Refresh trips data
