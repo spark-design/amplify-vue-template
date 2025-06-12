@@ -596,7 +596,7 @@ onMounted(() => {
                   <div v-if="doc.type.includes('image')" class="image-preview">
                     <img :src="doc.url" :alt="doc.name" @click="openImage(doc.url)" />
                   </div>
-                  <div v-else class="file-preview" @click="window.open(doc.url, '_blank')">
+                  <div v-else class="file-preview" @click="openImage(doc.url)">
                     <span class="file-icon">📄</span>
                     <span class="file-name">{{ doc.name }}</span>
                   </div>
