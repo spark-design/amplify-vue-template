@@ -298,7 +298,7 @@ function extractFlightDetails(notes: string): string {
   const flightStart = notes.indexOf('FLIGHT:');
   const nextSection = Math.min(
     notes.indexOf('HOTEL:', flightStart) >= 0 ? notes.indexOf('HOTEL:', flightStart) : Infinity,
-    notes.indexOf('DOCUMENT:', flightStart) >= 0 ? notes.indexOf('DOCUMENT:', flightStart) : Infinity,
+    notes.indexOf('DOCUMENT:', flightStart) >= 0 ? notes.indexOf('DOCUMENT:', flightStart) : Infinity,otes.indexOf('DOCUMENT:', flightStart) : Infinity,
     notes.indexOf('DOCUMENTS:', flightStart) >= 0 ? notes.indexOf('DOCUMENTS:', flightStart) : Infinity
   );
   
