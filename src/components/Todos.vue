@@ -370,68 +370,6 @@ onMounted(() => {
     loadAllTripImages();
   });
 });
-
-function extractHotelDetails(notes: string): string {
-  if (!hasHotelBooking(notes)) return '';
-  
-  const hotelStart = notes.indexOf('HOTEL:');
-  const nextSection = Math.min(
-    notes.indexOf('DOCUMENT:', hotelStart) >= 0 ? notes.indexOf('DOCUMENT:', hotelStart) : Infinity,
-    notes.indexOf('DOCUMENTS:', hotelStart) >= 0 ? notes.indexOf('DOCUMENTS:', hotelStart) : Infinity
-  );
-  
-  if (nextSection < Infinity) {
-    return notes.substring(hotelStart + 6, nextSection).trim();
-  } else {
-    return notes.substring(hotelStart + 6).trim();
-  }
-}
-
-// Navigation functions for tabs
-function navigateTabs() {
-  if (activeTab.value === 'details') {
-    activeTab.value = 'flight';
-  } else if (activeTab.value === 'flight') {
-    activeTab.value = 'hotel';
-  } else if (activeTab.value === 'hotel') {
-    activeTab.value = 'documents';
-  } else {
-    activeTab.value = 'details';
-  }
-}
-
-function getNextButtonText() {
-  switch (activeTab.value) {
-    case 'details': return 'Next: Flight';
-    case 'flight': return 'Next: Hotel';
-    case 'hotel': return 'Next: Documents';
-    case 'documents': return 'Back to Details';
-    default: return 'Next';
-  }
-}
-
-function openImage(url: string) {
-  window.open(url, '_blank');
-}
-    
-// Load trip images when trips are loaded
-function loadAllTripImages() {
-  trips.value.forEach(trip => {
-    if (trip.id) {
-      loadTripImages(trip.id);
-    }
-  });
-}
-
-// fetch trips when the component is mounted
-onMounted(() => {
-  listTrips();
-  
-  // Set up a watcher to load images when trips change
-  watch(trips, () => {
-    loadAllTripImages();
-  });
-});
 </script>
 
 <template>
