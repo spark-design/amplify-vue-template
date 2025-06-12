@@ -349,7 +349,7 @@ function getNextButtonText() {
 }
 
 function openImage(url: string) {
-  window.open(url, '_blank');
+  globalThis.window.open(url, '_blank');
 }
 
 // Load trip images when trips are loaded
