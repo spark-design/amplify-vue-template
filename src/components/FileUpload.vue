@@ -6,15 +6,31 @@
       <button @click="handleUpload" :disabled="!file">Upload</button>
     </div>
     <div v-if="uploadStatus" class="status-message">{{ uploadStatus }}</div>
+    <div v-if="uploadedFiles.length > 0" class="uploaded-files">
+      <h3>Uploaded Files</h3>
+      <ul>
+        <li v-for="fileKey in uploadedFiles" :key="fileKey">
+          {{ fileKey }}
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { uploadData } from 'aws-amplify/storage';
+import { ref, onMounted } from 'vue';
+import { uploadData, listAll } from 'aws-amplify/storage';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '../../amplify/data/resource';
 
 const file = ref<File | null>(null);
 const uploadStatus = ref('');
+const uploadedFiles = ref<string[]>([]);
+const client = generateClient<Schema>();
+
+onMounted(async () => {
+  await listUploadedFiles();
+});
 
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -23,16 +39,37 @@ const handleFileChange = (event: Event) => {
   }
 };
 
+const listUploadedFiles = async () => {
+  try {
+    const result = await listAll({
+      path: 'trip-photos/'
+    });
+    uploadedFiles.value = result.items.map(item => item.key);
+  } catch (error) {
+    console.error('Error listing files:', error);
+  }
+};
+
 const handleUpload = async () => {
   if (!file.value) return;
   
   try {
     uploadStatus.value = 'Uploading...';
+    const fileKey = `trip-photos/${file.value.name}`;
+    
     await uploadData({
-      path: `trip-photos/${file.value.name}`,
+      path: fileKey,
       data: file.value
     });
+    
     uploadStatus.value = 'Upload successful!';
+    
+    // Add the file key to the list of uploaded files
+    uploadedFiles.value.push(fileKey);
+    
+    // Clear the file input
+    file.value = null;
+    
   } catch (error) {
     console.error('Error uploading file:', error);
     uploadStatus.value = 'Upload failed. Please try again.';
@@ -71,5 +108,13 @@ button:disabled {
 .status-message {
   margin-top: 10px;
   font-style: italic;
+}
+
+.uploaded-files {
+  margin-top: 20px;
+}
+
+.uploaded-files ul {
+  padding-left: 20px;
 }
 </style>
