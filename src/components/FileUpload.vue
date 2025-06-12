@@ -6,47 +6,20 @@
       <button @click="handleUpload" :disabled="!file">Upload</button>
     </div>
     <div v-if="uploadStatus" class="status-message">{{ uploadStatus }}</div>
-    <div v-if="uploadedFiles.length > 0" class="uploaded-files">
-      <h3>Uploaded Files</h3>
-      <ul>
-        <li v-for="fileKey in uploadedFiles" :key="fileKey">
-          {{ fileKey }}
-        </li>
-      </ul>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { uploadData, listAll } from 'aws-amplify/storage';
-import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../../amplify/data/resource';
+import { ref } from 'vue';
+import { uploadData } from 'aws-amplify/storage';
 
 const file = ref<File | null>(null);
 const uploadStatus = ref('');
-const uploadedFiles = ref<string[]>([]);
-const client = generateClient<Schema>();
-
-onMounted(async () => {
-  await listUploadedFiles();
-});
 
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files.length > 0) {
     file.value = target.files[0];
-  }
-};
-
-const listUploadedFiles = async () => {
-  try {
-    const result = await listAll({
-      path: 'trip-photos/'
-    });
-    uploadedFiles.value = result.items.map(item => item.key);
-  } catch (error) {
-    console.error('Error listing files:', error);
   }
 };
 
@@ -63,11 +36,6 @@ const handleUpload = async () => {
     });
     
     uploadStatus.value = 'Upload successful!';
-    
-    // Add the file key to the list of uploaded files
-    uploadedFiles.value.push(fileKey);
-    
-    // Clear the file input
     file.value = null;
     
   } catch (error) {
@@ -108,13 +76,5 @@ button:disabled {
 .status-message {
   margin-top: 10px;
   font-style: italic;
-}
-
-.uploaded-files {
-  margin-top: 20px;
-}
-
-.uploaded-files ul {
-  padding-left: 20px;
 }
 </style>

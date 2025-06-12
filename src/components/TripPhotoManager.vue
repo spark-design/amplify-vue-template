@@ -35,8 +35,19 @@ import { uploadData } from 'aws-amplify/storage';
 import { generateClient } from 'aws-amplify/data';
 import type { Schema } from '../../amplify/data/resource';
 
+interface Trip {
+  id: string;
+  destination: string;
+  startDate: string;
+  endDate: string;
+  budget: number;
+  notes: string;
+  status: string;
+  photoKeys?: string;
+}
+
 const client = generateClient<Schema>();
-const trips = ref<any[]>([]);
+const trips = ref<Trip[]>([]);
 const selectedTripId = ref('');
 const file = ref<File | null>(null);
 const uploadStatus = ref('');
@@ -49,7 +60,7 @@ const photoKeysList = computed(() => {
   if (!selectedTrip.value || !selectedTrip.value.photoKeys) {
     return [];
   }
-  return selectedTrip.value.photoKeys.split(',').filter(key => key.trim() !== '');
+  return selectedTrip.value.photoKeys.split(',').filter((key: string) => key.trim() !== '');
 });
 
 onMounted(async () => {
@@ -92,6 +103,8 @@ const handleUpload = async () => {
     
     // Update the Trip record in DynamoDB
     const currentTrip = selectedTrip.value;
+    if (!currentTrip) return;
+    
     const currentKeys = currentTrip.photoKeys || '';
     const newPhotoKeys = currentKeys ? `${currentKeys},${fileKey}` : fileKey;
     

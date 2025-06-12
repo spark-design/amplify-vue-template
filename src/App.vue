@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import Todos from './components/Todos.vue'
-import TripPhotoManager from './components/TripPhotoManager.vue'
+import FileUpload from './components/FileUpload.vue'
 </script>
 
 <template>
   <main>
     <Todos />
-    <TripPhotoManager />
+    <FileUpload />
   </main>
 </template>
 
